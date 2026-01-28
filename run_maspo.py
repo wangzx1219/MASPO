@@ -87,7 +87,6 @@ async def limited_aprocess_task(item: Dict[str, Any], graph_types: List[GraphTyp
                                  use_judge: bool = False, nr: int = 1):
     async with sem:
         return await aprocess_task(item, graph_types, task_type, prompt_map, use_judge, nr=nr)
-# ------------------ 测试套件 ------------------
 async def arun_test_suite(data: List[Dict[str, Any]],
                           task_type: TaskType,
                           graph_types: List[GraphType] = None,
@@ -121,9 +120,8 @@ async def arun_test_suite(data: List[Dict[str, Any]],
         limited_aprocess_task(item, graph_types, task_type, task_sem, prompt_map, use_judge)
         for item in data
     ]
-    results_list = await tqdm_asyncio.gather(*tasks, total=len(tasks), desc="任务进度")
+    results_list = await tqdm_asyncio.gather(*tasks, total=len(tasks), desc="")
     flat_results = [r for sub in results_list for r in sub]
-    # 整理结果
     detailed_map = {}
     for r in flat_results:
         uid, gt_val = r["unique_id"], r["graph_type"]

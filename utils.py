@@ -33,7 +33,6 @@ def async_retry(tries: int = 5, delay: float = 0.5, max_delay: float = 30):
 @async_retry()
 async def async_call_llm(client, prompt: str, temperature: float = 0.0, 
                          max_tokens: int = 4096, use_ds_api: bool = False) -> str:
-    # 1. 确定模型
     model = "Qwen3-8B" if not use_ds_api else "gemini-2.5-pro"
     
     request_kwargs = {

@@ -1,6 +1,5 @@
 from config import AgentType, TaskType
 
-# ------------------ Agent角色描述 ------------------
 ROLE_DESCRIPTIONS = {
     AgentType.PREDICTOR: {
         TaskType.MATH: "Primary solver that provides step-by-step mathematical reasoning and final answer.",
@@ -13,11 +12,9 @@ ROLE_DESCRIPTIONS = {
     AgentType.DEBATOR: "Evaluator of multiple solutions that synthesizes the best approach from competing answers.",
     AgentType.LLM_AGG: "Integrator that compares multiple candidate solutions and produces a single authoritative answer.",
     AgentType.AGGREGATOR: "Voting mechanism that selects the most frequent answer from multiple predictors.",
-    # AgentDropout 数学题角色
     AgentType.MATH_EXPERT: "You are a math expert.",
     AgentType.MATH_ANALYST: "You are a mathematical analyst.",
     AgentType.PROGRAMMING_EXPERT: "You are a programming expert.",
-    # AgentDropout 代码生成角色
     AgentType.PROJECT_MANAGER: "You are a project manager.",
     AgentType.PROGRAMMER: "You are a programming expert.",
     AgentType.TEST_ANALYST: "You are a test analyst.",

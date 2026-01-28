@@ -26,7 +26,6 @@ def load_test_data(dataset: str) -> List[Dict[str, Any]]:
                 'task_type': task_type,
             }
             
-            # 根据任务类型处理答案
             if task_type == TaskType.CODE:
                 entry['answer'] = ''
                 entry['test_list'] = item.get('test_list', [])

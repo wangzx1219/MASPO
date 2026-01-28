@@ -174,7 +174,6 @@ class MAPromptOptimizer:
         ])
     
         full_requirement = "Ensure the agent's role, responsibilities, and input format remain consistent. " + requirement
-        # [新增] 注入下游反馈信息
         audience_instruction = ""
         if successor_info:
             audience_instruction = (
@@ -234,7 +233,7 @@ class MAPromptOptimizer:
                                 pure_local_mode: bool = False,
                                 use_lookahead_score: bool = False,
                                 lookahead_weights: Tuple[float, float, float] = (0.4, 0.4, 0.2),
-                                random_sample_set: Optional[Set[str]] = None) -> Dict[str, Any]:  # [新增参数]
+                                random_sample_set: Optional[Set[str]] = None) -> Dict[str, Any]: 
         n_eval = len(eval_samples)
         successors = []
         if use_lookahead_score and not is_terminal:
@@ -483,7 +482,6 @@ class MAPromptOptimizer:
                     topo_bar.update(1)
                     continue
             
-                # 优化当前节点
                 new_p = await self._optimize_agent(aid, requirement)
                 self.best_prompt[aid] = new_p
             
@@ -593,7 +591,6 @@ class MAPromptOptimizer:
                 "best_cumulative": node["cumulative_score"] + max(0, local_best["score"]),
             }
 
-        # 处理当前层节点
         if not state.current_beam:
             state.current_beam = [{
                 "prompt": state.best_overall_node["prompt"],
@@ -610,7 +607,6 @@ class MAPromptOptimizer:
             for node in state.current_beam
         ])
 
-        # 收集结果+更新状态
         all_next_nodes = []
         current_best_node = state.best_overall_node.copy()
         for res in node_results:
@@ -622,11 +618,9 @@ class MAPromptOptimizer:
                     "path": res.get("path", [])
                 }
 
-        # Beam剪枝
         all_next_nodes.sort(key=lambda x: x["cumulative_score"], reverse=True)
         state.current_beam = all_next_nodes[:beam_width]
 
-        # 更新patience计数
         improved = current_best_node["cumulative_score"] > state.best_overall_node["cumulative_score"] + 1e-6
         trigger_patience = False
         base_score = state.best_overall_node["cumulative_score"]
@@ -638,21 +632,19 @@ class MAPromptOptimizer:
             if state.current_patience_count >= patience:
                 trigger_patience = True
 
-        # 更新全局prompt（有显著改进时）
         score_delta = state.best_overall_node["cumulative_score"] - base_score
         if score_delta > 0:
             old_prompt = self.best_prompt[agent_id]
             new_prompt = state.best_overall_node["prompt"]
             self.best_prompt[agent_id] = new_prompt
 
-        # 推进探索层数
         state.total_layers_explored += 1
         return 1, trigger_patience
 
 
     async def optimize_all_round_robin(self, 
                                     requirement: str = " ",
-                                    max_total_depth: int = 10,  # 每个Agent必须完成的总次数
+                                    max_total_depth: int = 10, 
                                     beam_width: int = 2,
                                     patience: int = 3) -> Dict[int, str]:
         topo_order = self.mas._topo_order()
@@ -713,7 +705,7 @@ class MAPromptOptimizer:
                                         agent_states: Dict[int, AgentOptState], 
                                         use_dynamic_switching: bool = False,
                                         use_stochastic_sampling: bool = False,
-                                        use_beam_refresh: bool = False,  # [新增参数]
+                                        use_beam_refresh: bool = False, 
                                         rounds_per_turn: int = 2,
                                         max_total_depth: int = 10,
                                         use_feedback: bool = False,
@@ -838,7 +830,7 @@ class MAPromptOptimizer:
                                     use_feedback: bool = False,
                                     use_misleading_sampling: bool = False,
                                     use_lookahead_score: bool = False,
-                                    lookahead_weights: Tuple[float, float, float] = (0.4, 0.4, 0.2)) -> Dict[int, str]: # [新增参数]
+                                    lookahead_weights: Tuple[float, float, float] = (0.4, 0.4, 0.2)) -> Dict[int, str]: 
         self.beam_width = beam_width
         topo_order = self.mas._topo_order()
         optimizable_agents = [
@@ -1077,7 +1069,6 @@ class MAPromptOptimizer:
                     "total_evaluable": 0,
                 }
             
-            # [修改] 传入 random_sample_set 参数
             score_info = await self._evaluate_candidate(
                 cand_prompt=cand_p, 
                 agent_id=aid, 

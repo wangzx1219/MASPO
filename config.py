@@ -1,7 +1,6 @@
 from enum import Enum
 from openai import AsyncOpenAI
 
-# ------------------ 枚举常量 ------------------
 class GraphType(Enum):
     SUMMARIZE = "summarize"
     AGGREGATE = "aggregate"
@@ -31,7 +30,7 @@ class AgentType(Enum):
     CRITIC = "critic"
     PSYCHOLOGIST = "psychologist"
     HISTORIAN = "historian"
-    REFINER = "refiner"  # 新增
+    REFINER = "refiner"  
     MATH_AGENT = "math_agent"
     SCIENCE_AGENT = "science_agent"
     CODE_AGENT = "code_agent"
@@ -44,7 +43,6 @@ class TaskType(Enum):
     CODE = "code"              
 
 DATASET_CONFIG = {
-    # 数学任务
     "math": {
         "path": "dataset/math-500/math_500.jsonl",
         "task_type": TaskType.MATH,

@@ -25,7 +25,6 @@ class InferenceCache:
         self.question = question
     
     def set_node_data(self, agent_id: int, context: str, raw: str, short: str):
-        """一次性设置节点的输入和输出"""
         self.node_inputs[agent_id] = context
         self.node_outputs_raw[agent_id] = raw
         self.node_outputs_short[agent_id] = short
@@ -256,7 +255,6 @@ class MAS:
             current_prompts = HIERARCHICAL_PROMPTS.get(tt, HIERARCHICAL_PROMPTS[TaskType.MATH])
             for i in range(4):
                 agent = Agent(i, agent_types[i], tt)
-                # 直接注入 Prompt
                 agent.template = current_prompts[str(i)]
                 a.append(agent)
             
