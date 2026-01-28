@@ -1,7 +1,7 @@
 # MASPO
 This repository anonymously releases the codes and data for the paper MASPO: Joint Prompt Co-evolution for LLM-based Multi-Agent Systems
 
-## **📖 Parameter Reference**
+## **📖 Parameter Reference for `run_maspo.py`**
 This script serves as the main entry point for running Multi-Agent System (MAS) evaluation and prompt optimization across various datasets and task types.
 ### **Basic Arguments**
 | Argument | Type |  Default | Description |
