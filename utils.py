@@ -1,6 +1,3 @@
-"""
-工具函数：答案提取、标准化、代码执行等
-"""
 import re
 import html
 import asyncio
