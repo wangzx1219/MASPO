@@ -1,4 +1,5 @@
 import json
+import os
 import time
 import random
 import asyncio
@@ -79,7 +80,7 @@ async def aprocess_task(item: Dict[str, Any], graph_types: List[GraphType],
                         task_type: TaskType, prompt_map: Optional[Dict[int, str]] = None,
                         use_judge: bool = False, nr: int = 1) -> List[Dict[str, Any]]:
 
-    return [await aprocess_single(item, gt, task_type, prompt_map, use_judge) 
+    return [await aprocess_single(item, gt, task_type, prompt_map, use_judge, nr=nr) 
             for gt in graph_types]
 async def limited_aprocess_task(item: Dict[str, Any], graph_types: List[GraphType],
                                  task_type: TaskType, sem: asyncio.Semaphore,
@@ -114,10 +115,12 @@ async def arun_test_suite(data: List[Dict[str, Any]],
         "detailed": [],
         "start_time": time.strftime("%Y-%m-%d %H:%M:%S"),
         "use_judge": use_judge,
+        "nr": nr,
     }
+    print(f"Reflect rounds (nr): {nr}")
     start_total = time.time()
     tasks = [
-        limited_aprocess_task(item, graph_types, task_type, task_sem, prompt_map, use_judge)
+        limited_aprocess_task(item, graph_types, task_type, task_sem, prompt_map, use_judge, nr=nr)
         for item in data
     ]
     results_list = await tqdm_asyncio.gather(*tasks, total=len(tasks), desc="")
@@ -158,6 +161,9 @@ async def arun_test_suite(data: List[Dict[str, Any]],
     results["detailed"] = list(detailed_map.values())
     results["end_time"] = time.strftime("%Y-%m-%d %H:%M:%S")
     results["duration"] = time.time() - start_total
+    out_dir = os.path.dirname(output_file)
+    if out_dir:
+        os.makedirs(out_dir, exist_ok=True)
     with open(output_file, "w", encoding="utf-8") as f:
         json.dump(results, f, ensure_ascii=False, indent=2)
 
@@ -296,6 +302,7 @@ def main():
         else:
             mode_suffix = "topo"
         prompt_output_file = f"prompt/tbdspo_{dataset}_{graph_type.value}_{mode_suffix}.json"
+        os.makedirs(os.path.dirname(prompt_output_file), exist_ok=True)
         with open(prompt_output_file, "w", encoding="utf-8") as f:
             json.dump(prompt_map, f, indent=2, ensure_ascii=False)
         print(f"Optimized prompts saved to {prompt_output_file}")
@@ -303,7 +310,6 @@ def main():
         if statistics:
             stats_output_file = f"stats/tbdspo_{dataset}_{graph_type.value}_{mode_suffix}_stats.json"
 
-            import os
             os.makedirs("stats", exist_ok=True)
             
             with open(stats_output_file, "w", encoding="utf-8") as f:
@@ -331,16 +337,6 @@ def main():
         nr=args.nr,
     ))
 
-    asyncio.run(arun_test_suite(
-        test_data,
-        task_type=task_type,
-        graph_types=[graph_type],
-        sample_size=args.sample_size,
-        output_file=output_file,
-        max_concurrent=args.max_concurrent,
-        prompt_map=prompt_map,
-        use_judge=use_judge,
-        nr=args.nr
-    ))
+
 if __name__ == "__main__":
     main()
